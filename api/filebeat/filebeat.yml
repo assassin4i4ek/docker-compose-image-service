@@ -1,0 +1,21 @@
+filebeat.prospectors:
+  - type: docker
+    containers.ids:
+      - "*"
+    processors:
+      - add_docker_metadata: ~
+
+setup.template.name: "filebeat-"
+setup.template.pattern: "filebeat-*"
+setup.dashboards.enabled: true
+
+setup.kibana:
+  host: http://kibana:5601
+  username: elastic
+  password: youpassword
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: elastic
+  password: youpassword
+  index: "filebeat-%{[beat.version]}-%{+yyyy.MM.dd}"

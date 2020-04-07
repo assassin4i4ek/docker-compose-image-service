@@ -1,0 +1,30 @@
+{
+  "name": "image-storage",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/index.js",
+    "build": "NODE_ENV=production babel src -d dist",
+    "serve": "NODE_ENV=production node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "core-js": "^3.6.4",
+    "eureka-js-client": "^4.5.0",
+    "express": "^4.17.1",
+    "form-data": "^3.0.0",
+    "ip": "^1.1.5",
+    "multer": "^1.4.2",
+    "regenerator-runtime": "^0.13.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "nodemon": "^2.0.2"
+  }
+}

@@ -1,0 +1,123 @@
+version: "3.7"
+services:
+  # Eureka
+  discovery:
+    build: eureka/
+    image: image-service/eureka
+    ports:
+      - "8761:8761"
+
+  # Image Storage
+  storage:
+    build: image-storage/
+    image: image-service/image-storage
+    ports:
+      - "48000-48100:3000"
+    links:
+      - "discovery"
+    environment:
+      - IMAGE_STORAGE=common_storage/images
+      - HISTO_STORAGE=common_storage/histos
+      - EUREKA_HOST=discovery
+      - EUREKA_PORT=8761
+      - SERVICE_ALIAS=storage
+    volumes:
+      #- image-storage-volume:/usr/src/app/image-storage/common_storage
+      - ./cache:/usr/src/app/image-storage/common_storage
+
+  # Client Gateway
+  gateway:
+    build: gateway/
+    image: image-service/gateway
+    ports:
+      - "49000-49100:3000"
+    depends_on:
+      - storage
+    links:
+      - "discovery"
+    environment:
+      - STORAGE_URL=http://zuul:8080/storage/
+      - PROCESSOR_URL=http://zuul:8080/processor/
+      - EUREKA_HOST=discovery
+      - EUREKA_PORT=8761
+      - SERVICE_ALIAS=gateway
+
+  # Image processor
+  processor:
+    build: image-processor/
+    image: image-service/processor
+    ports:
+      - "3000"
+    links:
+      - "discovery"
+    environment:
+      - PORT=3000
+      - EUREKA_SERVER=http://discovery:8761/eureka
+      - SERVICE_ALIAS=processor
+
+  # Zuul Gateway
+  zuul:
+    build: zuul/
+    image: image-service/zuul
+    ports:
+      - "8080:8080"
+    links:
+      - "discovery"
+      - "gateway"
+      - "storage"
+    networks:
+      default:
+        aliases:
+          - zuul
+
+  # Logging Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-platinum:6.2.2
+    volumes:
+     - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: youpassword
+    networks:
+     - elk
+  
+  # Logging Filebeat
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:6.2.2
+    command: filebeat -e -strict.perms=false
+    user: root
+    restart: always
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - elk
+    links:
+      - "elasticsearch"
+      - "kibana"
+
+  # Logging Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.2.2
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: youpassword
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    links:
+      - "elasticsearch"
+
+volumes:
+  image-storage-volume:
+
+networks:
+  default:
+  elk:
+    driver: bridge

@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: zuul
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery:8761/eureka/
+      fetchRegistry: true
+
+zuul:
+  routes:
+    image-storage:
+      path: /storage/**
+      serviceId: storage
+    image-processor:
+      path: /processor/**
+      serviceId: processor
+    client-app:
+      path: /**
+      serviceId: gateway
+    
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 60000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    
+
+

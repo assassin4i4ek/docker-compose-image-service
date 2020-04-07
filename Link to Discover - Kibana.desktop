@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Link to Discover - Kibana
+Type=Link
+URL=http://localhost:5601/app/kibana#/discover?_g=(filters:!(('$state':(store:globalState),meta:(alias:'Image%20storage%20microservice',disabled:!t,index:'filebeat-*',key:docker.container.image,negate:!f,params:(query:image-service%2Fimage-storage,type:phrase),type:phrase,value:image-service%2Fimage-storage),query:(match:(docker.container.image:(query:image-service%2Fimage-storage,type:phrase))))))&_a=(columns:!(message),filters:!(('$state':(store:appState),meta:(alias:'Client%20gateway%20microservice',disabled:!t,index:'filebeat-*',key:docker.container.image,negate:!f,params:(query:image-service%2Fgateway,type:phrase),type:phrase,value:image-service%2Fgateway),query:(match:(docker.container.image:(query:image-service%2Fgateway,type:phrase)))),('$state':(store:appState),meta:(alias:'Image%20processor%20microservice',disabled:!f,index:'filebeat-*',key:docker.container.image,negate:!f,params:(query:image-service%2Fprocessor,type:phrase),type:phrase,value:image-service%2Fprocessor),query:(match:(docker.container.image:(query:image-service%2Fprocessor,type:phrase))))),index:'filebeat-*',interval:auto,query:(language:lucene,query:''),sort:!('@timestamp',desc))
+Icon=text-html
+Name[en_US]=Link to Discover - Kibana
